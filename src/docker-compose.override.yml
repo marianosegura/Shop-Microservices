@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  catalogdb:
+    container_name: catalogdb  # name used to override connection string below
+    restart: always  # restart upon any issue
+    ports: 
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db  # declared in docker-compose.yml
+
+  catalog.api:
+    container_name: catalog.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"  # override Catalog.API appsettings.json to connect to the container
+    depends_on:  # dependencies on other containers
+      - catalogdb
+    ports:
+      - "8000:80"  # forward from machine 8000 to container 80

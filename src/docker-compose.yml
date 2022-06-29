@@ -1,14 +1,25 @@
 version: '3.4'
 
 services:
+  portainer:
+    image: portainer/portainer-ce
+
   catalogdb:
     image: mongo
-
   catalog.api:
     image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
       dockerfile: Services/Catalog/Catalog.API/Dockerfile
       
+  basketdb:
+    image: redis:alpine
+  basket.api:
+    image: ${DOCKER_REGISTRY-}basketapi
+    build:
+      context: .
+      dockerfile: Services/Basket/Basket.API/Dockerfile
+
 volumes:  
   mongo_data:  # for persistent mongo data (volumnes are declared empty key-value)
+  portainer_data:

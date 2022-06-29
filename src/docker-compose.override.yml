@@ -1,6 +1,15 @@
 version: '3.4'
 
-services:
+services:  # vertical pattern db-api
+  portainer:
+    container_name: portainer  
+    ports: 
+      - "8080:8000"  # 8080 since 8000 is reserved for catalog api
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
   catalogdb:
     container_name: catalogdb  # name used to override connection string below
     restart: always  # restart upon any issue
@@ -8,7 +17,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db  # declared in docker-compose.yml
-
   catalog.api:
     container_name: catalog.api
     environment:
@@ -18,3 +26,19 @@ services:
       - catalogdb
     ports:
       - "8000:80"  # forward from machine 8000 to container 80
+
+  basketdb:
+    container_name: basketdb  # name used to override connection string below
+    restart: always 
+    ports: 
+      - "6379:6379"
+  basket.api:
+    container_name: basket.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "CacheSettings:ConnectionString=basketdb:6379"
+    depends_on:  
+      - basketdb
+    ports:
+      - "8001:80"
+

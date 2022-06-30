@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  portainer:
+  portainer:  
     image: portainer/portainer-ce
 
   catalogdb:
@@ -20,6 +20,19 @@ services:
       context: .
       dockerfile: Services/Basket/Basket.API/Dockerfile
 
-volumes:  
-  mongo_data:  # for persistent mongo data (volumnes are declared empty key-value)
+  discountdb:
+    image: postgres
+  pgadmin:
+    image: dpage/pgadmin4
+  discount.api:
+    image: ${DOCKER_REGISTRY-}discountapi
+    build:
+      context: .
+      dockerfile: Services/Discount/Discount.API/Dockerfile
+
+volumes:  # for persistent data (volumnes are declared empty key-value)
+  mongo_data:  
   portainer_data:
+  postgres_data:
+  pgadmin_data:
+

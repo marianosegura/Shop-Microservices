@@ -43,6 +43,9 @@ services:
       context: .
       dockerfile: Services/Ordering/Ordering.API/Dockerfile
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
 volumes:  # for persistent data (volumnes are declared empty key-value)
   mongo_data:  
   portainer_data:

@@ -38,8 +38,10 @@ services:  # vertical pattern db-api
       - ASPNETCORE_ENVIRONMENT=Development
       - "CacheSettings:ConnectionString=basketdb:6379"
       - "GrpcSettings:DiscountUrl=http://discount.grpc"
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     depends_on:  
       - basketdb
+      - rabbitmq
     ports:
       - "8001:80"
 
@@ -96,7 +98,16 @@ services:  # vertical pattern db-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678"  
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     depends_on:
         - orderdb
+        - rabbitmq
     ports:
       - "8004:80"
+
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"  # server 
+      - "15672:15672"  # dashboard

@@ -1,9 +1,12 @@
+using EventBus.Messages.Common;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Ordering.API.EventBusConsumer;
 using Ordering.Application;
 using Ordering.Infrastucture;
 
@@ -25,6 +28,29 @@ namespace Ordering.API
             // our custom service extension methods 
             services.AddApplicationServices();
             services.AddInfrastructureServices(Configuration);
+
+            //MassTransit - RabbitMQ
+            services.AddMassTransit(massTransitConfiguration =>
+            {  // setup rabbitmq connection through MassTransit
+                // register consumer for below use
+                massTransitConfiguration.AddConsumer<BasketCheckoutConsumer>();
+
+                massTransitConfiguration.UsingRabbitMq((rabbitBusContext, rabbitConfig) =>
+                {  // rabbitmq uses amqp protocol instead of http or other
+                    rabbitConfig.Host(Configuration["EventBusSettings:HostAddress"]);
+
+                    // subscribe to checkout events exchange
+                    rabbitConfig.ReceiveEndpoint(EventBusConstants.BasketCheckoutQueue, endpointConfig =>
+                    {  // configure subscription handlers/consumers 
+                        endpointConfig.ConfigureConsumer<BasketCheckoutConsumer>(rabbitBusContext);
+                    });
+                });
+            });
+            services.AddMassTransitHostedService();
+            services.AddScoped<BasketCheckoutConsumer>();  // consumers also have to be injected independently 
+
+            // AutoMapper
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

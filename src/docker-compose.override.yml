@@ -111,3 +111,15 @@ services:  # vertical pattern db-api
     ports:
       - "5672:5672"  # server 
       - "15672:15672"  # dashboard
+
+  ocelot.api:
+    container_name: ocelot.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+        - catalog.api
+        - basket.api
+        - discount.api
+        - ordering.api
+    ports:
+      - "8010:80"

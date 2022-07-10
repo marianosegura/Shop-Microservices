@@ -46,11 +46,18 @@ services:
   rabbitmq:
     image: rabbitmq:3-management-alpine
 
+  ocelot.api:
+    image: ${DOCKER_REGISTRY-}ocelotapi
+    build:
+      context: .
+      dockerfile: ApiGateway/Ocelot.API/Dockerfile
+
 volumes:  # for persistent data (volumnes are declared empty key-value)
   mongo_data:  
   portainer_data:
   postgres_data:
   pgadmin_data:
+
 
 
 

@@ -58,11 +58,18 @@ services:
       context: .
       dockerfile: ApiGateway/Shopping.Aggregator/Dockerfile
 
+  aspnetrunbasics:
+    image: ${DOCKER_REGISTRY-}aspnetrunbasics
+    build:
+      context: .
+      dockerfile: Frontend/Dockerfile
+
 volumes:  # for persistent data (volumnes are declared empty key-value)
   mongo_data:  
   portainer_data:
   postgres_data:
   pgadmin_data:
+
 
 
 
